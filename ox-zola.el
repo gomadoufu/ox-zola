@@ -952,8 +952,6 @@ and rewrite link paths to make blogging more seamless."
           ""))))
      )))
 
-;; 955-976行目を以下に置き換え
-
 (defun ox-zola--sandwiching (fun &rest args)
   "Execute Org-hugo FUN with ARGS inside an environment tailed for Zola."
   (let ((original-hugo-backend (org-export-get-backend 'hugo)))
@@ -961,6 +959,8 @@ and rewrite link paths to make blogging more seamless."
     (advice-add 'org-hugo--get-front-matter :override #'ox-zola--get-front-matter)
     (advice-add 'org-hugo--gen-front-matter :override #'ox-zola--gen-front-matter)
     (advice-add 'org-hugo-link :override #'ox-zola-link)
+    ;; Zola プロパティを Hugo プロパティにリネーム
+    (advice-add 'org-entry-get :around #'ox-zola--translate-property)
     (unwind-protect
         (condition-case err
             (apply fun args)
@@ -970,7 +970,16 @@ and rewrite link paths to make blogging more seamless."
       (org-export-register-backend original-hugo-backend)
       (advice-remove 'org-hugo--get-front-matter #'ox-zola--get-front-matter)
       (advice-remove 'org-hugo--gen-front-matter #'ox-zola--gen-front-matter)
-      (advice-remove 'org-hugo-link #'ox-zola-link))))
+      (advice-remove 'org-hugo-link #'ox-zola-link)
+      (advice-remove 'org-entry-get #'ox-zola--translate-property))))
+
+(defun ox-zola--translate-property (orig-fun pom property &rest args)
+  "Translate EXPORT_ZOLA_* properties to EXPORT_HUGO_* equivalents."
+  (let ((zola-prop (when (string-prefix-p "EXPORT_HUGO_" property)
+                     (concat "EXPORT_ZOLA_" (substring property 12)))))
+    (or (when zola-prop
+          (apply orig-fun pom zola-prop args))
+        (apply orig-fun pom property args))))
 
 ;;;###autoload
 (defun ox-zola-export-wim-to-md (&optional all-subtrees async visible-only noerror)
