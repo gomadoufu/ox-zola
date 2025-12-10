@@ -6,7 +6,7 @@
 ;; Maintainer: gicrisf <giovanni.crisalfi@protonmail.com>
 ;; Created: marzo 18, 2023
 ;; Modified: marzo 18, 2023
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Keywords: Org, markdown, docs
 ;; Homepage: https://github.com/gicrisf/ox-zola
 ;; Package-Requires: ((emacs "27.2"))
@@ -348,184 +348,184 @@ are \"toml\" and \"yaml\"."
   (org-export-define-derived-backend 'hugo 'blackfriday ; hugo < blackfriday < md < html
     :menu-entry
     '(?H "Export to Hugo-compatible Markdown"
-           ((?H "Subtree or File to Md file            "
-                (lambda (a _s v _b)
-                  (org-hugo-export-wim-to-md nil a v)))
-            (?h "File to Md file"
-                (lambda (a s v _b)
-                  (org-hugo-export-to-md a s v)))
-            (?O "Subtree or File to Md file and open   "
-                (lambda (a _s v _b)
-                  (if a
-                      (org-hugo-export-wim-to-md nil :async v)
-                    (org-open-file (org-hugo-export-wim-to-md nil nil v)))))
-            (?o "File to Md file and open"
-                (lambda (a s v _b)
-                  (if a
-                      (org-hugo-export-to-md :async s v)
-                    (org-open-file (org-hugo-export-to-md nil s v)))))
-            (?A "All subtrees (or File) to Md file(s)  "
-                (lambda (a _s v _b)
-                  (org-hugo-export-wim-to-md :all-subtrees a v)))
-            ;; TODO File to a temporary Md buffer (ox-zola-export-as-md)
-            (?t "File to a temporary Md buffer"
-                (lambda (a s v _b)
-                  (org-hugo-export-as-md a s v)))))
+         ((?H "Subtree or File to Md file            "
+              (lambda (a _s v _b)
+                (org-hugo-export-wim-to-md nil a v)))
+          (?h "File to Md file"
+              (lambda (a s v _b)
+                (org-hugo-export-to-md a s v)))
+          (?O "Subtree or File to Md file and open   "
+              (lambda (a _s v _b)
+                (if a
+                    (org-hugo-export-wim-to-md nil :async v)
+                  (org-open-file (org-hugo-export-wim-to-md nil nil v)))))
+          (?o "File to Md file and open"
+              (lambda (a s v _b)
+                (if a
+                    (org-hugo-export-to-md :async s v)
+                  (org-open-file (org-hugo-export-to-md nil s v)))))
+          (?A "All subtrees (or File) to Md file(s)  "
+              (lambda (a _s v _b)
+                (org-hugo-export-wim-to-md :all-subtrees a v)))
+          ;; TODO File to a temporary Md buffer (ox-zola-export-as-md)
+          (?t "File to a temporary Md buffer"
+              (lambda (a s v _b)
+                (org-hugo-export-as-md a s v)))))
     ;;;; translate-alist
-      :translate-alist '((code . org-hugo-kbd-tags-maybe)
-                         (drawer . org-hugo-drawer)
-                         (example-block . org-hugo-example-block)
-                         (export-block . org-hugo-export-block)
-                         (export-snippet . org-hugo-export-snippet)
-                         (headline . org-hugo-heading)
-                         (inner-template . org-hugo-inner-template)
-                         (inline-src-block . org-hugo-inline-src-block)
-                         (keyword . org-hugo-keyword)
-                         (link . org-hugo-link)
-                         (paragraph . org-hugo-paragraph)
-                         (src-block . org-hugo-src-block)
-                         (special-block . org-hugo-special-block))
+    :translate-alist '((code . org-hugo-kbd-tags-maybe)
+                       (drawer . org-hugo-drawer)
+                       (example-block . org-hugo-example-block)
+                       (export-block . org-hugo-export-block)
+                       (export-snippet . org-hugo-export-snippet)
+                       (headline . org-hugo-heading)
+                       (inner-template . org-hugo-inner-template)
+                       (inline-src-block . org-hugo-inline-src-block)
+                       (keyword . org-hugo-keyword)
+                       (link . org-hugo-link)
+                       (paragraph . org-hugo-paragraph)
+                       (src-block . org-hugo-src-block)
+                       (special-block . org-hugo-special-block))
     :filters-alist '((:filter-body . org-hugo-body-filter))
     ;;;; options-alist
-      ;;                KEY                       KEYWORD                    OPTION  DEFAULT                     BEHAVIOR
+    ;;                KEY                       KEYWORD                    OPTION  DEFAULT                     BEHAVIOR
     :options-alist '(;; Variables not setting the front-matter directly
-                       (:with-toc nil "toc" org-hugo-export-with-toc)
-                       (:section-numbers nil "num" org-hugo-export-with-section-numbers)
-                       (:author "AUTHOR" nil user-full-name newline)
-                       (:creator "CREATOR" nil org-hugo-export-creator-string)
-                       (:with-smart-quotes nil "'" nil) ;Hugo/Goldmark does more correct conversion to smart quotes, especially for single quotes.
-                       (:with-special-strings nil "-" nil) ;Hugo/Goldmark does the auto-conversion of "--" -> "–", "---" -> "—" and "..." -> "…"
-                       (:with-sub-superscript nil "^" '{}) ;Require curly braces to be wrapped around text to sub/super-scripted
-                       (:hugo-with-locale "ZOLA_WITH_LOCALE" nil nil)
-                       (:hugo-front-matter-format "ZOLA_FRONT_MATTER_FORMAT" nil     org-hugo-front-matter-format)
-                       (:hugo-level-offset "ZOLA_LEVEL_OFFSET" nil "1")
-                       (:hugo-preserve-filling "ZOLA_PRESERVE_FILLING" nil org-hugo-preserve-filling) ;Preserve breaks so that text filling in Markdown matches that of Org
-                       (:hugo-delete-trailing-ws "ZOLA_DELETE_TRAILING_WS" nil org-hugo-delete-trailing-ws)
-                       (:hugo-section "ZOLA_SECTION" nil org-hugo-section)
-                       (:hugo-bundle "ZOLA_BUNDLE" nil nil)
-                       (:hugo-base-dir "ZOLA_BASE_DIR" nil org-hugo-base-dir)
-                       (:hugo-goldmark "ZOLA_GOLDMARK" nil org-hugo-goldmark)
-                       (:hugo-code-fence "ZOLA_CODE_FENCE" nil t) ;Prefer to generate triple-backquoted Markdown code blocks by default.
-                       (:hugo-use-code-for-kbd "ZOLA_USE_CODE_FOR_KBD" nil org-hugo-use-code-for-kbd)
-                       (:hugo-prefer-hyphen-in-tags "ZOLA_PREFER_HYPHEN_IN_TAGS" nil org-hugo-prefer-hyphen-in-tags)
-                       (:hugo-allow-spaces-in-tags "ZOLA_ALLOW_SPACES_IN_TAGS" nil org-hugo-allow-spaces-in-tags)
-                       (:hugo-auto-set-lastmod "ZOLA_AUTO_SET_LASTMOD" nil org-hugo-auto-set-lastmod)
-                       (:hugo-custom-front-matter "ZOLA_CUSTOM_FRONT_MATTER" nil nil space)
-                       (:hugo-blackfriday "ZOLA_BLACKFRIDAY" nil nil space) ;Deprecated. See https://github.com/kaushalmodi/ox-hugo/discussions/485.
-                       (:hugo-front-matter-key-replace "ZOLA_FRONT_MATTER_KEY_REPLACE" nil nil space)
-                       (:hugo-date-format "ZOLA_DATE_FORMAT" nil org-hugo-date-format)
-                       (:hugo-paired-shortcodes "ZOLA_PAIRED_SHORTCODES" nil org-hugo-paired-shortcodes space)
-                       (:hugo-pandoc-citations "ZOLA_PANDOC_CITATIONS" nil nil)
-                       (:bibliography "BIBLIOGRAPHY" nil nil newline) ;Used in ox-hugo-pandoc-cite
-                       (:html-container "HTML_CONTAINER" nil org-hugo-container-element)
-                       (:html-container-class "HTML_CONTAINER_CLASS" nil "")
-    
-                       ;; Front-matter variables
-                       ;; https://gohugo.io/content-management/front-matter/#front-matter-variables
-                       ;; aliases
-                       (:hugo-aliases "ZOLA_ALIASES" nil nil space)
-                       ;; audio
-                       (:hugo-audio "ZOLA_AUDIO" nil nil)
-                       ;; date
-                       ;; "date" is parsed from the Org #+date or subtree property EXPORT_HUGO_DATE
-                       (:date "DATE" nil nil)
-                       ;; description
-                       (:description "DESCRIPTION" nil nil)
-                       ;; draft
-                       ;; "draft" value interpreted by the TODO state of a
-                       ;; post as Org subtree gets higher precedence.
-                       (:hugo-draft "ZOLA_DRAFT" nil nil)
-                       ;; expiryDate
-                       (:hugo-expirydate "ZOLA_EXPIRYDATE" nil nil)
-                       ;; headless (only for Page Bundles - Hugo v0.35+)
-                       (:hugo-headless "ZOLA_HEADLESS" nil nil)
-                       ;; images
-                       (:hugo-images "ZOLA_IMAGES" nil nil newline)
-                       ;; isCJKLanguage
-                       (:hugo-iscjklanguage "ZOLA_ISCJKLANGUAGE" nil nil)
-                       ;; keywords
-                       ;; "keywords" is parsed from the Org #+keywords or
-                       ;; subtree property EXPORT_KEYWORDS.
-                       (:keywords "KEYWORDS" nil nil newline)
-                       ;; layout
-                       (:hugo-layout "ZOLA_LAYOUT" nil nil)
-                       ;; lastmod
-                       (:hugo-lastmod "ZOLA_LASTMOD" nil nil)
-                       ;; linkTitle
-                       (:hugo-linktitle "ZOLA_LINKTITLE" nil nil)
-                       ;; locale (used in Hugo internal templates)
-                       (:hugo-locale "ZOLA_LOCALE" nil nil)
-                       ;; markup
-                       (:hugo-markup "ZOLA_MARKUP" nil nil) ;default is "md"
-                       ;; menu
-                       (:hugo-menu "ZOLA_MENU" nil nil space)
-                       (:hugo-menu-override "ZOLA_MENU_OVERRIDE" nil nil space)
-                       ;; outputs
-                       (:hugo-outputs "ZOLA_OUTPUTS" nil nil space)
-                       ;; publishDate
-                       (:hugo-publishdate "ZOLA_PUBLISHDATE" nil nil)
-                       ;; series
-                       (:hugo-series "ZOLA_SERIES" nil nil newline)
-                       ;; slug
-                       (:hugo-slug "ZOLA_SLUG" nil nil)
-                       ;; taxomonomies - tags, categories
-                       (:hugo-tags "ZOLA_TAGS" nil nil newline)
-                       ;; #+hugo_tags are used to set the post tags in Org
-                       ;; files written for file-based exports.  But for
-                       ;; subtree-based exports, the EXPORT_HUGO_TAGS
-                       ;; property can be used to override inherited tags
-                       ;; and Org-style tags.
-                       (:hugo-categories "ZOLA_CATEGORIES" nil nil newline)
-                       ;; #+hugo_categories are used to set the post
-                       ;; categories in Org files written for file-based
-                       ;; exports.  But for subtree-based exports, the
-                       ;; EXPORT_HUGO_CATEGORIES property can be used to
-                       ;; override inherited categories and Org-style
-                       ;; categories (Org-style tags with "@" prefix).
-                       ;; resources
-                       (:hugo-resources "ZOLA_RESOURCES" nil nil space)
-                       ;; title
-                       ;; "title" is parsed from the Org #+title or the subtree heading.
-                       ;; type
-                       (:hugo-type "ZOLA_TYPE" nil nil)
-                       ;; url
-                       (:hugo-url "ZOLA_URL" nil nil)
-                       ;; videos
-                       (:hugo-videos "ZOLA_VIDEOS" nil nil newline)
-                       ;; weight
-                       (:hugo-weight "ZOLA_WEIGHT" nil nil space))
+                     (:with-toc nil "toc" org-hugo-export-with-toc)
+                     (:section-numbers nil "num" org-hugo-export-with-section-numbers)
+                     (:author "AUTHOR" nil user-full-name newline)
+                     (:creator "CREATOR" nil org-hugo-export-creator-string)
+                     (:with-smart-quotes nil "'" nil) ;Hugo/Goldmark does more correct conversion to smart quotes, especially for single quotes.
+                     (:with-special-strings nil "-" nil) ;Hugo/Goldmark does the auto-conversion of "--" -> "–", "---" -> "—" and "..." -> "…"
+                     (:with-sub-superscript nil "^" '{}) ;Require curly braces to be wrapped around text to sub/super-scripted
+                     (:hugo-with-locale "ZOLA_WITH_LOCALE" nil nil)
+                     (:hugo-front-matter-format "ZOLA_FRONT_MATTER_FORMAT" nil     org-hugo-front-matter-format)
+                     (:hugo-level-offset "ZOLA_LEVEL_OFFSET" nil "1")
+                     (:hugo-preserve-filling "ZOLA_PRESERVE_FILLING" nil org-hugo-preserve-filling) ;Preserve breaks so that text filling in Markdown matches that of Org
+                     (:hugo-delete-trailing-ws "ZOLA_DELETE_TRAILING_WS" nil org-hugo-delete-trailing-ws)
+                     (:hugo-section "ZOLA_SECTION" nil org-hugo-section)
+                     (:hugo-bundle "ZOLA_BUNDLE" nil nil)
+                     (:hugo-base-dir "ZOLA_BASE_DIR" nil org-hugo-base-dir)
+                     (:hugo-goldmark "ZOLA_GOLDMARK" nil org-hugo-goldmark)
+                     (:hugo-code-fence "ZOLA_CODE_FENCE" nil t) ;Prefer to generate triple-backquoted Markdown code blocks by default.
+                     (:hugo-use-code-for-kbd "ZOLA_USE_CODE_FOR_KBD" nil org-hugo-use-code-for-kbd)
+                     (:hugo-prefer-hyphen-in-tags "ZOLA_PREFER_HYPHEN_IN_TAGS" nil org-hugo-prefer-hyphen-in-tags)
+                     (:hugo-allow-spaces-in-tags "ZOLA_ALLOW_SPACES_IN_TAGS" nil org-hugo-allow-spaces-in-tags)
+                     (:hugo-auto-set-lastmod "ZOLA_AUTO_SET_LASTMOD" nil org-hugo-auto-set-lastmod)
+                     (:hugo-custom-front-matter "ZOLA_CUSTOM_FRONT_MATTER" nil nil space)
+                     (:hugo-blackfriday "ZOLA_BLACKFRIDAY" nil nil space) ;Deprecated. See https://github.com/kaushalmodi/ox-hugo/discussions/485.
+                     (:hugo-front-matter-key-replace "ZOLA_FRONT_MATTER_KEY_REPLACE" nil nil space)
+                     (:hugo-date-format "ZOLA_DATE_FORMAT" nil org-hugo-date-format)
+                     (:hugo-paired-shortcodes "ZOLA_PAIRED_SHORTCODES" nil org-hugo-paired-shortcodes space)
+                     (:hugo-pandoc-citations "ZOLA_PANDOC_CITATIONS" nil nil)
+                     (:bibliography "BIBLIOGRAPHY" nil nil newline) ;Used in ox-hugo-pandoc-cite
+                     (:html-container "HTML_CONTAINER" nil org-hugo-container-element)
+                     (:html-container-class "HTML_CONTAINER_CLASS" nil "")
+                     
+                     ;; Front-matter variables
+                     ;; https://gohugo.io/content-management/front-matter/#front-matter-variables
+                     ;; aliases
+                     (:hugo-aliases "ZOLA_ALIASES" nil nil space)
+                     ;; audio
+                     (:hugo-audio "ZOLA_AUDIO" nil nil)
+                     ;; date
+                     ;; "date" is parsed from the Org #+date or subtree property EXPORT_HUGO_DATE
+                     (:date "DATE" nil nil)
+                     ;; description
+                     (:description "DESCRIPTION" nil nil)
+                     ;; draft
+                     ;; "draft" value interpreted by the TODO state of a
+                     ;; post as Org subtree gets higher precedence.
+                     (:hugo-draft "ZOLA_DRAFT" nil nil)
+                     ;; expiryDate
+                     (:hugo-expirydate "ZOLA_EXPIRYDATE" nil nil)
+                     ;; headless (only for Page Bundles - Hugo v0.35+)
+                     (:hugo-headless "ZOLA_HEADLESS" nil nil)
+                     ;; images
+                     (:hugo-images "ZOLA_IMAGES" nil nil newline)
+                     ;; isCJKLanguage
+                     (:hugo-iscjklanguage "ZOLA_ISCJKLANGUAGE" nil nil)
+                     ;; keywords
+                     ;; "keywords" is parsed from the Org #+keywords or
+                     ;; subtree property EXPORT_KEYWORDS.
+                     (:keywords "KEYWORDS" nil nil newline)
+                     ;; layout
+                     (:hugo-layout "ZOLA_LAYOUT" nil nil)
+                     ;; lastmod
+                     (:hugo-lastmod "ZOLA_LASTMOD" nil nil)
+                     ;; linkTitle
+                     (:hugo-linktitle "ZOLA_LINKTITLE" nil nil)
+                     ;; locale (used in Hugo internal templates)
+                     (:hugo-locale "ZOLA_LOCALE" nil nil)
+                     ;; markup
+                     (:hugo-markup "ZOLA_MARKUP" nil nil) ;default is "md"
+                     ;; menu
+                     (:hugo-menu "ZOLA_MENU" nil nil space)
+                     (:hugo-menu-override "ZOLA_MENU_OVERRIDE" nil nil space)
+                     ;; outputs
+                     (:hugo-outputs "ZOLA_OUTPUTS" nil nil space)
+                     ;; publishDate
+                     (:hugo-publishdate "ZOLA_PUBLISHDATE" nil nil)
+                     ;; series
+                     (:hugo-series "ZOLA_SERIES" nil nil newline)
+                     ;; slug
+                     (:hugo-slug "ZOLA_SLUG" nil nil)
+                     ;; taxomonomies - tags, categories
+                     (:hugo-tags "ZOLA_TAGS" nil nil newline)
+                     ;; #+hugo_tags are used to set the post tags in Org
+                     ;; files written for file-based exports.  But for
+                     ;; subtree-based exports, the EXPORT_HUGO_TAGS
+                     ;; property can be used to override inherited tags
+                     ;; and Org-style tags.
+                     (:hugo-categories "ZOLA_CATEGORIES" nil nil newline)
+                     ;; #+hugo_categories are used to set the post
+                     ;; categories in Org files written for file-based
+                     ;; exports.  But for subtree-based exports, the
+                     ;; EXPORT_HUGO_CATEGORIES property can be used to
+                     ;; override inherited categories and Org-style
+                     ;; categories (Org-style tags with "@" prefix).
+                     ;; resources
+                     (:hugo-resources "ZOLA_RESOURCES" nil nil space)
+                     ;; title
+                     ;; "title" is parsed from the Org #+title or the subtree heading.
+                     ;; type
+                     (:hugo-type "ZOLA_TYPE" nil nil)
+                     ;; url
+                     (:hugo-url "ZOLA_URL" nil nil)
+                     ;; videos
+                     (:hugo-videos "ZOLA_VIDEOS" nil nil newline)
+                     ;; weight
+                     (:hugo-weight "ZOLA_WEIGHT" nil nil space))
     )
   )
 
 (defun ox-zola-special-block (special-block contents info)
   (let*
-    ((block-type (org-element-property :type special-block))
-     (block-type-plist (cdr (assoc block-type ox-zola-special-block-type-properties)))
-     (header (org-babel-parse-header-arguments
-              (car (org-element-property :header special-block))))
-     (trim-pre (or (alist-get :trim-pre header) ;`:trim-pre' in #+header has higher precedence.
-                   (plist-get block-type-plist :trim-pre)))
-     (trim-pre (org-hugo--value-get-true-p trim-pre)) ;If "nil", converts to nil
-     (trim-pre-tag (if trim-pre org-hugo--trim-pre-marker ""))
-     (last-element-p (null (org-export-get-next-element special-block info)))
-     (trim-post (unless last-element-p ;No need to add trim-post markers if this is the last element.
-                  (or (alist-get :trim-post header) ;`:trim-post' in #+header has higher precedence.
-                      (plist-get block-type-plist :trim-pre))))
-     (trim-post (org-hugo--value-get-true-p trim-post)) ;If "nil", converts to nil
-     (trim-post-tag (if trim-post org-hugo--trim-post-marker ""))
-     (paired-shortcodes (let* ((str (plist-get info :hugo-paired-shortcodes))
-                               (str-list (when (org-string-nw-p str)
-                                           (split-string str " "))))
-                          str-list))
-     (sc-regexp "\\`%%?%s\\'") ;Regexp to match an element from `paired-shortcodes'
-     (html-attr (org-export-read-attribute :attr_html special-block))
-     (caption (plist-get html-attr :caption))
-     (contents (when (stringp contents)
-                 (org-trim
-                  (if (plist-get block-type-plist :raw)
-                      ;; https://lists.gnu.org/r/emacs-orgmode/2022-01/msg00132.html
-                      (org-element-interpret-data (org-element-contents special-block))
-                    contents)))))
+      ((block-type (org-element-property :type special-block))
+       (block-type-plist (cdr (assoc block-type ox-zola-special-block-type-properties)))
+       (header (org-babel-parse-header-arguments
+                (car (org-element-property :header special-block))))
+       (trim-pre (or (alist-get :trim-pre header) ;`:trim-pre' in #+header has higher precedence.
+                     (plist-get block-type-plist :trim-pre)))
+       (trim-pre (org-hugo--value-get-true-p trim-pre)) ;If "nil", converts to nil
+       (trim-pre-tag (if trim-pre org-hugo--trim-pre-marker ""))
+       (last-element-p (null (org-export-get-next-element special-block info)))
+       (trim-post (unless last-element-p ;No need to add trim-post markers if this is the last element.
+                    (or (alist-get :trim-post header) ;`:trim-post' in #+header has higher precedence.
+                        (plist-get block-type-plist :trim-pre))))
+       (trim-post (org-hugo--value-get-true-p trim-post)) ;If "nil", converts to nil
+       (trim-post-tag (if trim-post org-hugo--trim-post-marker ""))
+       (paired-shortcodes (let* ((str (plist-get info :hugo-paired-shortcodes))
+                                 (str-list (when (org-string-nw-p str)
+                                             (split-string str " "))))
+                            str-list))
+       (sc-regexp "\\`%%?%s\\'") ;Regexp to match an element from `paired-shortcodes'
+       (html-attr (org-export-read-attribute :attr_html special-block))
+       (caption (plist-get html-attr :caption))
+       (contents (when (stringp contents)
+                   (org-trim
+                    (if (plist-get block-type-plist :raw)
+                        ;; https://lists.gnu.org/r/emacs-orgmode/2022-01/msg00132.html
+                        (org-element-interpret-data (org-element-contents special-block))
+                      contents)))))
     ;; (message "[ox-zola-spl-blk DBG] block-type: %s" block-type)
     ;; (message "[ox-zola-spl-blk DBG] last element?: %s" (null (org-export-get-next-element special-block info)))
     ;; (message "[ox-zola-spl-blk DBG] %s: header: %s" block-type header)
@@ -552,7 +552,7 @@ are \"toml\" and \"yaml\"."
                               (let* ((raw-list (org-element-property :attr_shortcode special-block))
                                      (raw-str (mapconcat #'identity raw-list " ")))
                                 (org-string-nw-p raw-str))))
-        
+               
                ;; Named arguments.
                (named-args (unless pos-args
                              (let* ((raw-list (org-element-property :attr_shortcode special-block))
@@ -562,7 +562,7 @@ are \"toml\" and \"yaml\"."
                                     (raw-str
                                      (mapconcat (lambda (x) (concat (car x) "=" (car (cdr x)) )) couples ", ")))
                                (org-string-nw-p raw-str))))
-        
+               
                (sc-args (or pos-args named-args))
                (sc-args (if sc-args
                             (concat " " sc-args " ")
@@ -571,18 +571,18 @@ are \"toml\" and \"yaml\"."
                                 (cl-member block-type paired-shortcodes
                                            :test (lambda (b sc) ;`sc' would be an element from `paired-shortcodes'
                                                    (string-match-p (format sc-regexp b) sc)))))
-        
+               
                (sc-begin (format "%s{%s %s(%s) %s}"
                                  trim-pre-tag "%" block-type sc-args "%"))
                (sc-end (format "{%s end %s}%s"
                                "%" "%" trim-post-tag)))
-        
+          
           (message "[ox-zola-spl-blk DBG] attr-sc1: %s"
                    (org-element-property :attr_shortcode special-block))
           (message "[ox-zola-spl-blk DBG] attr-sc: %s" attr-sc)
           (message "[ox-zola-spl-blk DBG] pos-args: %s" pos-args)
           (message "[ox-zola-spl-blk DBG] named-args: %s" named-args)
-        
+          
           (format "%s\n%s\n%s"
                   sc-begin contents sc-end))
         )
@@ -650,19 +650,19 @@ and rewrite link paths to make blogging more seamless."
 
           ;; Links of type [[* Some heading]].
           (`headline
-                     (let ((title (org-export-data (org-element-property :title destination) info)))
-                       (format
-                        "[%s](#%s)"
-                        ;; Description
-                        (cond ((org-string-nw-p desc))
-                              ((org-export-numbered-headline-p destination info)
-                               (mapconcat #'number-to-string
-                                          (org-export-get-headline-number destination info)
-                                          "."))
-                              (t
-                               title))
-                        ;; Reference
-                        (org-hugo--get-anchor destination info))))
+           (let ((title (org-export-data (org-element-property :title destination) info)))
+             (format
+              "[%s](#%s)"
+              ;; Description
+              (cond ((org-string-nw-p desc))
+                    ((org-export-numbered-headline-p destination info)
+                     (mapconcat #'number-to-string
+                                (org-export-get-headline-number destination info)
+                                "."))
+                    (t
+                     title))
+              ;; Reference
+              (org-hugo--get-anchor destination info))))
           ;; Links to other Org elements like source blocks, tables,
           ;; paragraphs, standalone figures,  links, etc.
           
@@ -821,159 +821,182 @@ and rewrite link paths to make blogging more seamless."
                 (org-blackfriday--valid-html-anchor-name
                  (org-element-property :value destination)))))
      (t ;[[file:foo.png]], [[file:foo.org::* Heading]], [[file:foo.org::#custom-id]], link type: file
-           (let* ((link-param-str "")
-                  (path (cond
-                         (link-is-url
-                          ;; Taken from ox-html.el -- Extract attributes
-                          ;; from parent's paragraph.  HACK: Only do this
-                          ;; for the first link in parent (inner image link
-                          ;; for inline images).  This is needed as long as
-                          ;; attributes cannot be set on a per link basis.
-                          (let* ((attr
-                                  (let ((parent (org-export-get-parent-element link)))
-                                    (and (eq (org-element-map parent 'link #'identity info :first-match) link)
-                                         (org-export-read-attribute :attr_html parent))))
-                                 ;; https://www.w3schools.com/tags/tag_link.asp
-                                 (link-params `((title . ,(plist-get attr :title))
-                                                (style . ,(plist-get attr :style))
-                                                (referrerpolicy . ,(plist-get attr :referrerpolicy))
-                                                (media . ,(plist-get attr :media))
-                                                (target . ,(plist-get attr :target))
-                                                (rel . ,(plist-get attr :rel))
-                                                (sizes . ,(plist-get attr :sizes))
-                                                (type . ,(plist-get attr :type)))))
-                            (dolist (param link-params)
-                              (let ((name (car param))
-                                    (val (cdr param)))
-                                (when val
-                                  (setq link-param-str (concat link-param-str
-                                                               (format "%s=\"%s\" "
-                                                                       name val))))))
-                            ;; (message "[org-hugo-link DBG] link params: %s" link-param-str)
-                            )
-                          (concat type ":" raw-path))
-                         (;; Remove the "file://" prefix.
-                          (string= type "file")
-                          (message "[org-hugo-link DBG] raw-path: %s" raw-path)
-                          (let* ((path1 (replace-regexp-in-string "\\`file://" "" raw-path))
-                                 (path-lc (downcase path1)))
-                            (cond
-                             (;; foo.org, foo.org::* Heading, foo.org::#custom_id
-                              (string= ".org" (file-name-extension path-lc "."))
-                              (let ((ref "")
-                                    (anchor ""))
-                                (if (string-suffix-p org-hugo--preprocessed-buffer-dummy-file-suffix path-lc)
-                                    (progn
-                                      (setq ref (string-remove-suffix
-                                                 org-hugo--preprocessed-buffer-dummy-file-suffix
-                                                 (file-name-nondirectory path1)))
-                                      ;; Dummy Org file paths created in
-                                      ;; `org-hugo--get-pre-processed-buffer'
-                                      ;; For dummy Org file paths, we are
-                                      ;; limiting to only "#" style search
-                                      ;; strings.
-                                      (when (string-match ".*\\.org::\\(#.*\\)" raw-link)
-                                        (setq anchor (match-string-no-properties 1 raw-link))))
-                                  ;; Regular Org file paths.
-                                  (setq ref (file-name-sans-extension (file-name-nondirectory path1)))
-                                  (let ((link-search-str
-                                         ;; If raw-link is "./foo.org::#bar",
-                                         ;; set `link-search-str' to
-                                         ;; "#bar".
-                                         (when (string-match ".*\\.org::\\(.*\\)" raw-link)
-                                           (match-string-no-properties 1 raw-link))))
-                                    (message "[org-hugo-link DBG] link-search-str: %s" link-search-str)
-                                    (when link-search-str
-                                      (setq anchor (org-hugo--search-and-get-anchor raw-path link-search-str info)))))
-                                ;; (message "[org-hugo-link file.org::*Heading DBG] ref    = %s" ref)
-                                ;; (message "[org-hugo-link file.org::*Heading DBG] anchor = %s" anchor)
-                                (cond
-                                 ;; Link to a post subtree.  In this case,
-                                 ;; the "anchor" is actually the post's
-                                 ;; slug.
-                                 ((and (org-string-nw-p anchor) (not (string-prefix-p "#" anchor)))
-                                  (format "{{< relref \"%s\" >}}" anchor))
-                                 ;; Link to a non-post subtree, like a subheading in a post.
-                                 ((or (org-string-nw-p ref) (org-string-nw-p anchor))
-                                  (format "{{< relref \"%s%s\" >}}" ref anchor))
-                                 (t
-                                  ""))))
-                             (t ;; attachments like foo.png
-                              (org-hugo--attachment-rewrite-maybe path1 info)))))
-                         (t
-                          raw-path)))
-                  (link-param-str (org-string-nw-p (org-trim link-param-str))))
-             ;; (message "[org-hugo-link DBG] desc=%s path=%s" desc path)
-             ;; (message "[org-hugo-link DBG] link-param-str=%s" link-param-str)
-             (cond
-              ;; Link description is a `figure' shortcode but does not
-              ;; already have the `link' parameter set.
-              ((and desc
-                    (string-match-p "\\`{{<\\s-*figure\\s-+" desc)
-                    (not (string-match-p "\\`{{<\\s-*figure\\s-+.*link=" desc)))
-               (replace-regexp-in-string "\\s-*>}}\\'"
-                                         (format " link=\"%s\"\\&" path)
-                                         desc))
-              ;; Both link description and link attributes are present.
-              ((and desc
-                    link-param-str)
-               (format "<a href=\"%s\" %s>%s</a>"
-                       (org-html-encode-plain-text path)
-                       link-param-str
-                       (org-link-unescape desc)))
-              ;; Only link description, but no link attributes.
-              (desc
-               (let* ((path-has-space (and
-                                       (not (string-prefix-p "{{< relref " path))
-                                       (string-match-p "\\s-" path)))
-                      (path (if path-has-space
-                                ;; https://github.com/kaushalmodi/ox-hugo/issues/376
-                                ;; https://github.com/gohugoio/hugo/issues/6742#issuecomment-573924706
-                                (format "<%s>" path)
-                              path)))
-                 (format "[%s](%s)" desc path)))
-              ;; Only link attributes, but no link description.
-              (link-param-str
-               (let ((path (org-html-encode-plain-text path)))
-                 (format "<a href=\"%s\" %s>%s</a>"
-                         path
-                         link-param-str
-                         ;; Below trick is to prevent Hugo from
-                         ;; auto-hyperlinking the link in the
-                         ;; description. Idea from
-                         ;; https://stackoverflow.com/q/25706012/1219634.
-                         (replace-regexp-in-string ":" "&colon;" (org-link-unescape path)))))
-              ;; Neither link description, nor link attributes.
-              ((string-prefix-p "{{< relref " path)
-               (format "[%s](%s)" path path))
-              ((org-string-nw-p path)
-               (format "<%s>" path))
-              (t
-               ""))))
+      (let* ((link-param-str "")
+             (path (cond
+                    (link-is-url
+                     ;; Taken from ox-html.el -- Extract attributes
+                     ;; from parent's paragraph.  HACK: Only do this
+                     ;; for the first link in parent (inner image link
+                     ;; for inline images).  This is needed as long as
+                     ;; attributes cannot be set on a per link basis.
+                     (let* ((attr
+                             (let ((parent (org-export-get-parent-element link)))
+                               (and (eq (org-element-map parent 'link #'identity info :first-match) link)
+                                    (org-export-read-attribute :attr_html parent))))
+                            ;; https://www.w3schools.com/tags/tag_link.asp
+                            (link-params `((title . ,(plist-get attr :title))
+                                           (style . ,(plist-get attr :style))
+                                           (referrerpolicy . ,(plist-get attr :referrerpolicy))
+                                           (media . ,(plist-get attr :media))
+                                           (target . ,(plist-get attr :target))
+                                           (rel . ,(plist-get attr :rel))
+                                           (sizes . ,(plist-get attr :sizes))
+                                           (type . ,(plist-get attr :type)))))
+                       (dolist (param link-params)
+                         (let ((name (car param))
+                               (val (cdr param)))
+                           (when val
+                             (setq link-param-str (concat link-param-str
+                                                          (format "%s=\"%s\" "
+                                                                  name val))))))
+                       ;; (message "[org-hugo-link DBG] link params: %s" link-param-str)
+                       )
+                     (concat type ":" raw-path))
+                    (;; Remove the "file://" prefix.
+                     (string= type "file")
+                     (message "[org-hugo-link DBG] raw-path: %s" raw-path)
+                     (let* ((path1 (replace-regexp-in-string "\\`file://" "" raw-path))
+                            (path-lc (downcase path1)))
+                       (cond
+                        (;; foo.org, foo.org::* Heading, foo.org::#custom_id
+                         (string= ".org" (file-name-extension path-lc "."))
+                         (let ((ref "")
+                               (anchor ""))
+                           (if (string-suffix-p org-hugo--preprocessed-buffer-dummy-file-suffix path-lc)
+                               (progn
+                                 (setq ref (string-remove-suffix
+                                            org-hugo--preprocessed-buffer-dummy-file-suffix
+                                            (file-name-nondirectory path1)))
+                                 ;; Dummy Org file paths created in
+                                 ;; `org-hugo--get-pre-processed-buffer'
+                                 ;; For dummy Org file paths, we are
+                                 ;; limiting to only "#" style search
+                                 ;; strings.
+                                 (when (string-match ".*\\.org::\\(#.*\\)" raw-link)
+                                   (setq anchor (match-string-no-properties 1 raw-link))))
+                             ;; Regular Org file paths.
+                             (setq ref (file-name-sans-extension (file-name-nondirectory path1)))
+                             (let ((link-search-str
+                                    ;; If raw-link is "./foo.org::#bar",
+                                    ;; set `link-search-str' to
+                                    ;; "#bar".
+                                    (when (string-match ".*\\.org::\\(.*\\)" raw-link)
+                                      (match-string-no-properties 1 raw-link))))
+                               (message "[org-hugo-link DBG] link-search-str: %s" link-search-str)
+                               (when link-search-str
+                                 (setq anchor (org-hugo--search-and-get-anchor raw-path link-search-str info)))))
+                           ;; (message "[org-hugo-link file.org::*Heading DBG] ref    = %s" ref)
+                           ;; (message "[org-hugo-link file.org::*Heading DBG] anchor = %s" anchor)
+                           (cond
+                            ;; Link to a post subtree.  In this case,
+                            ;; the "anchor" is actually the post's
+                            ;; slug.
+                            ((and (org-string-nw-p anchor) (not (string-prefix-p "#" anchor)))
+                             (format "{{< relref \"%s\" >}}" anchor))
+                            ;; Link to a non-post subtree, like a subheading in a post.
+                            ((or (org-string-nw-p ref) (org-string-nw-p anchor))
+                             (format "{{< relref \"%s%s\" >}}" ref anchor))
+                            (t
+                             ""))))
+                        (t ;; attachments like foo.png
+                         (org-hugo--attachment-rewrite-maybe path1 info)))))
+                    (t
+                     raw-path)))
+             (link-param-str (org-string-nw-p (org-trim link-param-str))))
+        ;; (message "[org-hugo-link DBG] desc=%s path=%s" desc path)
+        ;; (message "[org-hugo-link DBG] link-param-str=%s" link-param-str)
+        (cond
+         ;; Link description is a `figure' shortcode but does not
+         ;; already have the `link' parameter set.
+         ((and desc
+               (string-match-p "\\`{{<\\s-*figure\\s-+" desc)
+               (not (string-match-p "\\`{{<\\s-*figure\\s-+.*link=" desc)))
+          (replace-regexp-in-string "\\s-*>}}\\'"
+                                    (format " link=\"%s\"\\&" path)
+                                    desc))
+         ;; Both link description and link attributes are present.
+         ((and desc
+               link-param-str)
+          (format "<a href=\"%s\" %s>%s</a>"
+                  (org-html-encode-plain-text path)
+                  link-param-str
+                  (org-link-unescape desc)))
+         ;; Only link description, but no link attributes.
+         (desc
+          (let* ((path-has-space (and
+                                  (not (string-prefix-p "{{< relref " path))
+                                  (string-match-p "\\s-" path)))
+                 (path (if path-has-space
+                           ;; https://github.com/kaushalmodi/ox-hugo/issues/376
+                           ;; https://github.com/gohugoio/hugo/issues/6742#issuecomment-573924706
+                           (format "<%s>" path)
+                         path)))
+            (format "[%s](%s)" desc path)))
+         ;; Only link attributes, but no link description.
+         (link-param-str
+          (let ((path (org-html-encode-plain-text path)))
+            (format "<a href=\"%s\" %s>%s</a>"
+                    path
+                    link-param-str
+                    ;; Below trick is to prevent Hugo from
+                    ;; auto-hyperlinking the link in the
+                    ;; description. Idea from
+                    ;; https://stackoverflow.com/q/25706012/1219634.
+                    (replace-regexp-in-string ":" "&colon;" (org-link-unescape path)))))
+         ;; Neither link description, nor link attributes.
+         ((string-prefix-p "{{< relref " path)
+          (format "[%s](%s)" path path))
+         ((org-string-nw-p path)
+          (format "<%s>" path))
+         (t
+          ""))))
      )))
 
-(defun ox-zola--sandwiching (fun)
-  "Execute Org-hugo FUN inside an environment tailed for Zola."
+;; 955-976行目を以下に置き換え
+
+(defun ox-zola--sandwiching (fun &rest args)
+  "Execute Org-hugo FUN with ARGS inside an environment tailed for Zola."
   (let ((original-hugo-backend (org-export-get-backend 'hugo)))
-    (progn
-      (ox-zola--set-pseudohugo-backend)
-      (advice-add 'org-hugo--get-front-matter :override #'ox-zola--get-front-matter)
-      (advice-add 'org-hugo--gen-front-matter :override #'ox-zola--gen-front-matter)
-      (advice-add 'org-hugo-link :override #'ox-zola-link)
-      (condition-case err
-          (funcall fun)
-        (error
-         (message "%s" (replace-regexp-in-string "hugo" "zola"
-                                                 (error-message-string err)))))
+    (ox-zola--set-pseudohugo-backend)
+    (advice-add 'org-hugo--get-front-matter :override #'ox-zola--get-front-matter)
+    (advice-add 'org-hugo--gen-front-matter :override #'ox-zola--gen-front-matter)
+    (advice-add 'org-hugo-link :override #'ox-zola-link)
+    (unwind-protect
+        (condition-case err
+            (apply fun args)
+          (error
+           (message "%s" (replace-regexp-in-string "hugo" "zola"
+                                                   (error-message-string err)))))
       (org-export-register-backend original-hugo-backend)
       (advice-remove 'org-hugo--get-front-matter #'ox-zola--get-front-matter)
       (advice-remove 'org-hugo--gen-front-matter #'ox-zola--gen-front-matter)
       (advice-remove 'org-hugo-link #'ox-zola-link))))
 
-(defun ox-zola-export-wim-to-md ()
-  "Export the current subtree/all subtrees/current file to a Zola post."
+;;;###autoload
+(defun ox-zola-export-wim-to-md (&optional all-subtrees async visible-only noerror)
+  "Export the current subtree/all subtrees/current file to a Zola post.
+
+This is an Export \"What I Mean\" function.  See `org-hugo-export-wim-to-md'
+for the detailed behavior.
+
+If ALL-SUBTREES is non-nil, export all valid post subtrees.
+ASYNC means the process should happen asynchronously.
+VISIBLE-ONLY means don't export contents of hidden elements.
+NOERROR is passed to file-based export."
+  (interactive "P")
+  (ox-zola--sandwiching #'org-hugo-export-wim-to-md
+                        all-subtrees async visible-only noerror))
+
+;;;###autoload
+(defun ox-zola-export-to-md (&optional async subtreep visible-only)
+  "Export current buffer to a Zola-compatible Markdown file.
+
+ASYNC means the process should happen asynchronously.
+SUBTREEP means export the sub-tree at point.
+VISIBLE-ONLY means don't export contents of hidden elements."
   (interactive)
-  (ox-zola--sandwiching #'org-hugo-export-wim-to-md))
+  (ox-zola--sandwiching #'org-hugo-export-to-md
+                        async subtreep visible-only))
 
 (defun ox-zola-export-to-md ()
   "Export current buffer to a Zola-compatible Markdown file."
